@@ -1,0 +1,56 @@
+N = 300
+ch = [[1]*(n + 1) for n in range(N)]
+for n in range(N):
+    for r in range(1, n):
+        ch[n][r] = ch[n-1][r-1] + ch[n-1][r]
+chs = [sum(row) for row in ch]
+
+def solve(n):
+    if n < 100:
+        for i in range(n):
+            yield i, i
+    else:
+        steps = min(n - 2, 31)
+        rem = n - steps
+        assert rem >= 0
+        take = [False]*steps
+        for i in range(steps-1,0,-1):
+            if rem >= chs[i] - 1:
+                rem -= chs[i] - 1
+                take[i] = True
+        take += [False]*rem
+        j = 0
+        for i, take in enumerate(take):
+            assert j == 0 or j == i
+            if take:
+                if j == 0:
+                    yield from ((i, J) for J in range(i + 1))
+                    j = i + 1
+                else:
+                    assert j == i
+                    yield from ((i, J) for J in range(i, -1, -1))
+                    j = 0
+            else:
+                yield i, j
+                if j == i: j += 1
+
+
+def adj(i, j, ii, jj):
+    return (ii, jj) in {(i-1, j-1), (i-1, j), (i, j-1), (i, j+1), (i+1, j), (i+1, j+1)}
+
+# mx = 0
+for cas in range(1, 1+int(input())):
+    print("Case #{}:".format(cas))
+    n = int(input())
+    sol = [*solve(n)]
+    assert len(sol) <= 500, n
+    assert all(0 <= j <= i for i, j in sol)
+    assert sum(ch[i][j] for i, j in sol) == n
+    assert sol
+    assert sol[0] == (0, 0)
+    assert all(adj(i1, j1, i2, j2) for (i1, j1), (i2, j2) in zip(sol, sol[1:]))
+    for x, y in sol: print(x+1, y+1)
+    # if mx < len(sol):
+    #     mx = len(sol)
+    #     from sys import stderr; print(mx, file=stderr)
+

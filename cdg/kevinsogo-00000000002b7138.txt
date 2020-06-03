@@ -1,0 +1,17 @@
+for cas in range(1, 1+int(input())):
+    def solve():
+        prefs = []
+        mids = ['X']
+        suffs = []
+        for it in range(int(input())):
+            pref, *mid, suff = input().split('*')
+            prefs.append(pref)
+            mids += mid
+            suffs.append(suff)
+        pref = max(prefs, key=len)
+        suff = max(suffs, key=len)
+        if (all(pref.startswith(x) for x in prefs) and 
+            all(suff.endswith(x) for x in suffs)):
+            return pref + ''.join(mids) + suff
+
+    print("Case #{}:".format(cas), solve() or '*')
